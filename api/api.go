@@ -6,21 +6,24 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/briheet/tkgo/internals"
 	"github.com/briheet/tkgo/types"
 	"go.uber.org/zap"
 )
 
 type Server struct {
-	ctx    context.Context
-	logger *zap.Logger
-	addr   string
+	ctx     context.Context
+	logger  *zap.Logger
+	addr    string
+	storage *types.NonPresistentMap
 }
 
-func NewServer(ctx context.Context, logger *zap.Logger, addr string) *Server {
+func NewServer(ctx context.Context, logger *zap.Logger, addr string, storage *types.NonPresistentMap) *Server {
 	return &Server{
-		ctx:    ctx,
-		logger: logger,
-		addr:   addr,
+		ctx:     ctx,
+		logger:  logger,
+		addr:    addr,
+		storage: storage,
 	}
 }
 
@@ -47,7 +50,7 @@ func (s *Server) GetToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if current inmemory map has the user map or not
-	err = CheckInMemory(requestData)
+	err = internals.CheckInMemory(requestData)
 	if err != nil {
 		s.logger.Error("User not present in memory", zap.Error(err))
 		return

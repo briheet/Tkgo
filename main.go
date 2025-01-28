@@ -7,10 +7,13 @@ import (
 	"os"
 
 	"github.com/briheet/tkgo/api"
+	"github.com/briheet/tkgo/storage"
 	"go.uber.org/zap"
 )
 
 func main() {
+	ctx := context.Background()
+
 	logger, err := zap.NewProduction()
 	if err != nil {
 		log.Fatal(err)
@@ -19,8 +22,9 @@ func main() {
 	defer logger.Sync()
 
 	port := ":8080"
-	ctx := context.Background()
-	server := api.NewServer(ctx, logger, port)
+	storage := storage.NewStorage()
+
+	server := api.NewServer(ctx, logger, port, storage)
 
 	mux := http.NewServeMux()
 	server.Serve(mux)
