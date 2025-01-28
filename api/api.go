@@ -27,4 +27,5 @@ func NewServer(ctx context.Context, logger *zap.Logger, addr string, storage *st
 func (s *Server) Serve(mux *http.ServeMux) {
 	mux.HandleFunc("GET /health", s.Health)
 	mux.HandleFunc("GET /getToken", s.GetToken)
+	mux.HandleFunc("POST /createUser", s.CreateUser)
 }

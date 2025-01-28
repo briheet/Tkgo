@@ -11,7 +11,8 @@ type NonPresistentMap struct {
 }
 
 type UserData struct {
-	SimulationTime int
-	TimeCreated    time.Time
-	TokenCount     map[string]int
+	SimulationTime  int
+	TimeCreated     time.Time
+	TokenCount      map[string]int
+	SimulationCount int
 }

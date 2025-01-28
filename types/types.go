@@ -1,8 +1,8 @@
 package types
 
 type User struct {
-	UserName string `json:"username"`
-	UserId   string `json:"userid"`
+	UserName string `json:"userName"`
+	UserId   string `json:"userID"`
 }
 
 type MapData struct {
@@ -13,4 +13,10 @@ type MapData struct {
 type UserTokenRequest struct {
 	UserInfo User
 	TokenID  string `json:"tokenID"`
+}
+
+type CreateUser struct {
+	UserInfo       User
+	SimulationTime int `json:"simulationTime"`
+	TokenNumbers   int `json:"tokenNumbers"`
 }
