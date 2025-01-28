@@ -14,10 +14,4 @@ type UserData struct {
 	SimulationTime int
 	TimeCreated    time.Time
 	TokenCount     map[string]int
-	TokenValues    MinimumValues
-}
-
-type MinimumValues struct {
-	MinimumToken string
-	MinimumValue int
 }
