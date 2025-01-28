@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -14,11 +13,11 @@ func NewStorage() *NonPresistentMap {
 	}
 }
 
-func (s *NonPresistentMap) GetUser(req types.UserTokenRequest) (map[string]any, bool) {
+func (s *NonPresistentMap) GetUserToken(req types.User) (map[string]any, bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	userData, exists := s.Map[req.UserInfo.UserId]
+	userData, exists := s.Map[req.UserId]
 	if !exists {
 		mpp := map[string]any{"token": ""}
 		return mpp, false
@@ -34,10 +33,21 @@ func (s *NonPresistentMap) GetUser(req types.UserTokenRequest) (map[string]any, 
 		}
 	}
 
-	userData.SimulationCount++
+	totalTokensUsed := 0
+	for _, count := range userData.TokenCount {
+		totalTokensUsed += count
+	}
+
+	if userData.SimulationDone {
+		return map[string]any{
+			"message":         "No more tokens available, simulation limit reached",
+			"simulationTime":  userData.SimulationTime,
+			"totalTokensUsed": totalTokensUsed,
+		}, true
+	}
 
 	// End of Simulation, need to return all data back
-	if userData.SimulationTime >= userData.SimulationCount {
+	if userData.SimulationTime == totalTokensUsed {
 		tokenUsage := []string{}
 		leastUsedTokens := []string{}
 
@@ -48,6 +58,9 @@ func (s *NonPresistentMap) GetUser(req types.UserTokenRequest) (map[string]any, 
 			}
 		}
 
+		userData.SimulationDone = true
+		s.Map[req.UserId] = userData
+
 		return map[string]any{
 			"message":         "Simulation Ended",
 			"simulationTime":  userData.SimulationTime,
@@ -57,6 +70,12 @@ func (s *NonPresistentMap) GetUser(req types.UserTokenRequest) (map[string]any, 
 
 	}
 
+	// if userData.SimulationCount > userData.SimulationTime {
+	// 	mpp := map[string]any{"message": "the SimulationCount has exceeded simulationTime, wait for the tokens to be refreshed"}
+	// 	return mpp, false
+	// }
+
+	// fmt.Println("Stored users in memory:", s.Map)
 	userData.TokenCount[minToken]++
 
 	mpp := map[string]any{"token": minToken}
@@ -83,16 +102,11 @@ func (s *NonPresistentMap) CreateANewUser(req types.CreateUser) error {
 	}
 
 	s.Map[req.UserInfo.UserId] = UserData{
-		SimulationTime:  req.SimulationTime,
-		TimeCreated:     time.Now(),
-		TokenCount:      tokenCount,
-		SimulationCount: 0,
-	}
-
-	// Need to check if the user has been created or not
-	exists := s.CheckUserPresentOrNot(req.UserInfo.UserId)
-	if !exists {
-		return errors.New("not able to create a new User")
+		UserName:       req.UserInfo.UserName,
+		SimulationTime: req.SimulationTime,
+		TimeCreated:    time.Now(),
+		TokenCount:     tokenCount,
+		SimulationDone: false,
 	}
 
 	return nil

@@ -2,17 +2,12 @@ package types
 
 type User struct {
 	UserName string `json:"userName"`
-	UserId   string `json:"userID"`
+	UserId   string `json:"userId"`
 }
 
 type MapData struct {
 	UserInfo  User
 	TokenData map[string]int
-}
-
-type UserTokenRequest struct {
-	UserInfo User
-	TokenID  string `json:"tokenID"`
 }
 
 type CreateUser struct {
