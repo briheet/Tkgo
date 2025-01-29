@@ -24,7 +24,11 @@ func (s *Server) GetToken(w http.ResponseWriter, r *http.Request) {
 		s.logger.Error("Failed to decode request body", zap.Error(err))
 		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"message": "Invalid data format"})
+		// json.NewEncoder(w).Encode(map[string]string{"message": "Invalid data format"})
+		if err = json.NewEncoder(w).Encode(map[string]string{"message": "Invalid data format"}); err != nil {
+			s.logger.Error("Failed to encode the data", zap.Error(err))
+			return
+		}
 		return
 	}
 
@@ -34,10 +38,13 @@ func (s *Server) GetToken(w http.ResponseWriter, r *http.Request) {
 	// either the token which is great, else all the token count as the simulation has ended
 	userData, exists := s.storage.GetUserToken(requestData)
 	if !exists {
-		s.logger.Error("User not present in memory", zap.Error(err))
+		s.logger.Error("User not present in memory")
 		w.WriteHeader(http.StatusNotFound)
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"message": "The user not present in memory, please make a new user"})
+		if err = json.NewEncoder(w).Encode(map[string]string{"message": "The user not present in memory, please make a new user"}); err != nil {
+			s.logger.Error("Failed to encode the data", zap.Error(err))
+			return
+		}
 		return
 	}
 
@@ -45,8 +52,10 @@ func (s *Server) GetToken(w http.ResponseWriter, r *http.Request) {
 	s.logger.Info("The token has been accessed successfully")
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(userData)
-	// json.NewEncoder(w).Encode(map[string]string{"token": userData})
+	if err = json.NewEncoder(w).Encode(userData); err != nil {
+		s.logger.Error("Failed to encode the data", zap.Error(err))
+		return
+	}
 }
 
 func (s *Server) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +66,10 @@ func (s *Server) CreateUser(w http.ResponseWriter, r *http.Request) {
 		s.logger.Error("Failed to decode request body", zap.Error(err))
 		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"message": "invalid data format"})
+		if err := json.NewEncoder(w).Encode(map[string]string{"message": "invalid data format"}); err != nil {
+			s.logger.Error("Failed to encode the data", zap.Error(err))
+			return
+		}
 		return
 	}
 
@@ -69,7 +81,10 @@ func (s *Server) CreateUser(w http.ResponseWriter, r *http.Request) {
 		s.logger.Error("The user is already present")
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"message": "The user already exists in memory, cannot create a new user"})
+		if err := json.NewEncoder(w).Encode(map[string]string{"message": "The user already exists in memory, cannot create a new user"}); err != nil {
+			s.logger.Error("Failed to encode the data", zap.Error(err))
+			return
+		}
 		return
 	}
 
@@ -82,7 +97,10 @@ func (s *Server) CreateUser(w http.ResponseWriter, r *http.Request) {
 		s.logger.Error("Failed to create a new user", zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"message": "The user has not been created due to internal server errors"})
+		if err := json.NewEncoder(w).Encode(map[string]string{"message": "The user has not been created due to internal server errors"}); err != nil {
+			s.logger.Error("Failed to encode the data", zap.Error(err))
+			return
+		}
 		return
 	}
 
@@ -91,12 +109,18 @@ func (s *Server) CreateUser(w http.ResponseWriter, r *http.Request) {
 		s.logger.Error("Failed to create a new user", zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"message": "The user has not been created due to internal server errors"})
+		if err := json.NewEncoder(w).Encode(map[string]string{"message": "The user has not been created due to internal server errors"}); err != nil {
+			s.logger.Error("Failed to encode the data", zap.Error(err))
+			return
+		}
 		return
 	}
 
 	s.logger.Info("A user has been successfully created")
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully"})
+	if err := json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully"}); err != nil {
+		s.logger.Error("Failed to encode the data", zap.Error(err))
+		return
+	}
 }

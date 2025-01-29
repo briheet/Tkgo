@@ -22,7 +22,13 @@ func main() {
 		log.Fatal(err)
 		os.Exit(-1)
 	}
-	defer logger.Sync()
+
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			log.Printf("Logger sync failed: %v", err)
+			os.Exit(-1)
+		}
+	}()
 
 	port := ":8080"
 	storage := storage.NewStorage()
@@ -44,9 +50,10 @@ func main() {
 
 func InitCronScheduler(storage *storage.NonPresistentMap) *cron.Cron {
 	c := cron.New()
-	c.AddFunc("@every 00h10m00s", func() {
-		ResetTokens(storage)
-	})
+	if _, err := c.AddFunc("@every 00h00m10s", func() { ResetTokens(storage) }); err != nil {
+		log.Printf("Failed to schedule cron job: %v", err)
+		os.Exit(-1)
+	}
 	c.Start()
 
 	return c
