@@ -2,12 +2,15 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/briheet/tkgo/api"
 	"github.com/briheet/tkgo/storage"
+	"github.com/robfig/cron/v3"
 	"go.uber.org/zap"
 )
 
@@ -24,6 +27,9 @@ func main() {
 	port := ":8080"
 	storage := storage.NewStorage()
 
+	c := InitCronScheduler(storage)
+	defer c.Stop()
+
 	server := api.NewServer(ctx, logger, port, storage)
 
 	mux := http.NewServeMux()
@@ -33,5 +39,38 @@ func main() {
 
 	if err := http.ListenAndServe(port, mux); err != nil {
 		zap.Error(err)
+	}
+}
+
+func InitCronScheduler(storage *storage.NonPresistentMap) *cron.Cron {
+	c := cron.New()
+	c.AddFunc("@every 00h10m00s", func() {
+		ResetTokens(storage)
+	})
+	c.Start()
+
+	return c
+}
+
+func ResetTokens(storage *storage.NonPresistentMap) {
+	storage.Mu.Lock()
+
+	defer storage.Mu.Unlock()
+	currentTime := time.Now()
+
+	for userId, userData := range storage.Map {
+		// Check if 24 hours have passed since last reset
+		if currentTime.Sub(userData.TimeCreated) >= 24*time.Hour {
+			fmt.Printf("Resetting tokens for user: %s\n", userId)
+
+			// Reset all token counts to zero
+			for token := range userData.TokenCount {
+				userData.TokenCount[token] = 0
+			}
+
+			// Update the last reset timestamp
+			userData.TimeCreated = currentTime
+			storage.Map[userId] = userData // update the time
+		}
 	}
 }

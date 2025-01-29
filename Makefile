@@ -9,3 +9,6 @@ docker-build:
 
 docker-run:
 	docker run -p 8080:8080 tkgo:multistage
+
+test: 
+	go test -v ./...

@@ -20,8 +20,8 @@ func NewStorage() *NonPresistentMap {
 }
 
 func (s *NonPresistentMap) GetUserToken(req types.User) (map[string]any, bool) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.Mu.Lock()
+	defer s.Mu.Unlock()
 
 	userData, exists := s.Map[req.UserId]
 	if !exists {
@@ -89,8 +89,8 @@ func (s *NonPresistentMap) GetUserToken(req types.User) (map[string]any, bool) {
 }
 
 func (s *NonPresistentMap) CheckUserPresentOrNot(userId string) bool {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.Mu.Lock()
+	defer s.Mu.Unlock()
 
 	_, exists := s.Map[userId]
 
@@ -98,8 +98,8 @@ func (s *NonPresistentMap) CheckUserPresentOrNot(userId string) bool {
 }
 
 func (s *NonPresistentMap) CreateANewUser(req types.CreateUser) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.Mu.Lock()
+	defer s.Mu.Unlock()
 
 	tokenCount := make(map[string]int, req.TokenNumbers)
 	for i := 1; i <= req.TokenNumbers; i++ {

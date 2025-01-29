@@ -6,7 +6,7 @@ import (
 )
 
 type NonPresistentMap struct {
-	mu  sync.RWMutex
+	Mu  sync.RWMutex
 	Map map[string]UserData
 }
 
