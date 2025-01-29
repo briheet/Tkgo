@@ -80,7 +80,7 @@ http://localhost:8080/health
 
 ## Insights
 
-![Diagram](./docs/TkgoMap.drawio)
+![Diagram](./docs/dia.png)
 
 Create User Request Body
 
