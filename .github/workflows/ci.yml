@@ -47,4 +47,4 @@ jobs:
         run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
 
       - name: Run golangci-lint
-        run: golangci-lint run
+        run: golangci-lint run --skip-dirs=vendor --skip-dirs=~/go/pkg/mod
