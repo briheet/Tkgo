@@ -12,7 +12,10 @@ func (s *Server) Health(w http.ResponseWriter, r *http.Request) {
 	s.logger.Info("Running health handler")
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{"message": "server healthy"})
+	if err := json.NewEncoder(w).Encode(map[string]string{"message": "server healthy"}); err != nil {
+		s.logger.Error("Failed to encode the data", zap.Error(err))
+		return
+	}
 }
 
 func (s *Server) GetToken(w http.ResponseWriter, r *http.Request) {
