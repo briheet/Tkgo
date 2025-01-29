@@ -47,8 +47,14 @@ Dockerfile if necessary. When ready, simply use the Dockerfile to
 build the image.
 
 ```sh
+# Enter the project directory
 cd Tkgo
+
+# Directly build the image
 docker build -t tkgo:multistage -f Dockerfile.multistage .
+
+# Or use Makefile
+make docker-build
 ```
 
 This will create the Tkgo image and pull in the necessary dependencies.
@@ -58,7 +64,11 @@ your host. For now, we simply map port 8080 of the host to
 port 8080 of the Docker (or whatever port was exposed in the Dockerfile):
 
 ```sh
+# Directly run the image
 docker run -p 8080:8080 tkgo:multistage
+
+# Or use the Makefile
+make docker-run
 ```
 
 Verify the deployment by navigating to your server address in

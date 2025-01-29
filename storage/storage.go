@@ -7,6 +7,12 @@ import (
 	"github.com/briheet/tkgo/types"
 )
 
+type Storage interface {
+	GetUserToken(types.User) (map[string]any, bool)
+	CheckUserPresentOrNot(string) bool
+	CreateANewUser(types.CreateUser) error
+}
+
 func NewStorage() *NonPresistentMap {
 	return &NonPresistentMap{
 		Map: make(map[string]UserData),
