@@ -78,6 +78,31 @@ your preferred browser.
 http://localhost:8080/health
 ```
 
+## Insights
+
+![Diagram](./docs/TkgoMap.drawio)
+
+Create User Request Body
+
+```
+{
+    "userInfo": {
+        "userName": "John",
+        "userId": "1234"
+    },
+    "simulationTime": 5,
+    "tokenNumbers": 5
+}
+```
+
+GetToken Request Body
+
+```
+{
+    "userId": "1234"
+}
+```
+
 ## Development
 
 Going on. Want to contribute? Make a pr :)
