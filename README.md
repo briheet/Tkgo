@@ -80,7 +80,7 @@ http://localhost:8080/health
 
 ## Insights
 
-![Diagram](./docs/dia.png)
+![Diagram](./docs/dianew.png)
 
 Create User Request Body
 
